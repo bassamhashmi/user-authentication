@@ -18,7 +18,7 @@ const LoginForm = ({ handleClickSignup }) => {
   };
 
   const handleSignin = async () => {
-    const response = await fetch("http://localhost:3001/auth/signin", {
+    const response = await fetch("http://localhost:3001/api/auth/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

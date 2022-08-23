@@ -1,10 +1,13 @@
 require("dotenv").config();
 
-const express = require("express");
 const connectDatabase = require("./database");
-const morgan = require("morgan");
+const express = require("express");
+
 const userRoute = require("./routes/user");
+
+const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 
 connectDatabase();
 
@@ -17,7 +20,18 @@ if (process.env.ENVIRONMENT === "dev") {
   app.use(morgan("dev"));
 }
 
-app.use("/auth", userRoute);
+app.use("/api/auth", userRoute);
+
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html")),
+    function (error) {
+      if (error) {
+        res.status(500).json({ message: error });
+      }
+    };
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`server started > listening on PORT ${process.env.PORT}`);
