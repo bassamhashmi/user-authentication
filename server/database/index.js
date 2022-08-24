@@ -1,12 +1,17 @@
 const mongoose = require("mongoose");
 
 const connectDatabase = async () => {
-  await mongoose.connect(process.env.DATABASE_URL);
+  try {
+    await mongoose.connect(process.env.DATABASE_URL);
 
-  const dbInfo = mongoose.connection;
+    const dbInfo = mongoose.connection;
 
-  console.log(`Database started with host ${dbInfo.host} `);
-  dbInfo.on("error", (error) => console.error(error));
+    console.log(`Database started with host ${dbInfo.host} `);
+
+    dbInfo.on("error", (error) => console.error(error));
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = connectDatabase;

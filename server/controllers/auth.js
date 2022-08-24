@@ -40,6 +40,7 @@ const signIn = async (req, res) => {
       res.status(400).json({ message: "Enter details correctly" });
       return;
     }
+
     const user = await UsersModel.findOne({
       email,
     });
@@ -49,7 +50,7 @@ const signIn = async (req, res) => {
       return;
     }
 
-    const validate = bcrypt.compareSync(password, user.password);
+    const validate = bcrypt.compareSync(req.body.password, user.password);
 
     if (!validate) {
       res
@@ -58,15 +59,41 @@ const signIn = async (req, res) => {
       return;
     }
 
-    // Generating JWT
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: 86400,
+    // Generating JWT ==> auth_token
+    const auth_token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: 21600,
     });
 
-    res.status(200).json({ success: true, validate, token, user });
+    res.status(200).json({ success: true, validate, auth_token, user });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
-module.exports = { signIn, signUp };
+/*
+    GET | User Data
+*/
+const getUserData = async (req, res) => {
+  try {
+    const userData = await UsersModel.findOne({ email: req.user.email });
+
+    res.status(200).json({ authorized: true, userData });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+};
+
+/*
+    GET | All Users Data
+*/
+const getAllUsers = async (req, res) => {
+  try {
+    const usersData = await UsersModel.find();
+
+    res.status(200).json(usersData);
+  } catch (error) {
+    res.status(404).json({ message: error });
+  }
+};
+
+module.exports = { signIn, signUp, getUserData, getAllUsers };

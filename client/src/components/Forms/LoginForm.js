@@ -2,9 +2,11 @@ import React from "react";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 import { useAuthContext } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
+import { useUserTokenContext } from "../../context/userTokenContext";
 
 const LoginForm = ({ handleClickSignup }) => {
   const [_isAuthenticated, handleAuthChange] = useAuthContext();
+  const [userToken, { handleUserTokenChange }] = useUserTokenContext();
 
   const [userInput, setUserInput] = React.useState({
     email: "",
@@ -20,9 +22,11 @@ const LoginForm = ({ handleClickSignup }) => {
   const handleSignin = async () => {
     const response = await fetch("http://localhost:3001/api/auth/signin", {
       method: "POST",
+
       headers: {
         "Content-Type": "application/json",
       },
+
       body: JSON.stringify({
         email: userInput.email,
         password: userInput.password,
@@ -32,7 +36,10 @@ const LoginForm = ({ handleClickSignup }) => {
     const json = await response.json();
 
     if (json.success) {
+      handleUserTokenChange(json.auth_token);
+
       handleAuthChange(true);
+
       navigate("/");
     }
   };
