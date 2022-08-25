@@ -2,11 +2,9 @@ import React from "react";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
 import { useAuthContext } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
-import { useUserTokenContext } from "../../context/userTokenContext";
 
-const LoginForm = ({ handleClickSignup }) => {
-  const [_isAuthenticated, handleAuthChange] = useAuthContext();
-  const [userToken, { handleUserTokenChange }] = useUserTokenContext();
+const LoginForm = () => {
+  const [, handleAuthChange] = useAuthContext();
 
   const [userInput, setUserInput] = React.useState({
     email: "",
@@ -19,29 +17,46 @@ const LoginForm = ({ handleClickSignup }) => {
     setUserInput({ ...userInput, [event.target.name]: event.target.value });
   };
 
-  const handleSignin = async () => {
-    const response = await fetch("http://localhost:3001/api/auth/signin", {
-      method: "POST",
+  const handleLogin = async () => {
+    const user = {
+      email: userInput.email,
+      password: userInput.password,
+    };
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const url = "http://localhost:3001/api/auth/signin";
 
-      body: JSON.stringify({
-        email: userInput.email,
-        password: userInput.password,
-      }),
-    });
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
 
-    const json = await response.json();
+      const json = await response.json();
 
-    if (json.success) {
-      handleUserTokenChange(json.auth_token);
+      if (!response.ok) {
+        alert("Details are incorrect!");
+        return;
+      }
+
+      localStorage.setItem("token", json.auth_token);
 
       handleAuthChange(true);
-
       navigate("/");
+    } catch (error) {
+      console.log("Error", error);
     }
+
+    setUserInput({
+      email: "",
+      password: "",
+    });
+  };
+
+  const handleClickSignup = () => {
+    navigate("/signup");
   };
 
   return (
@@ -66,14 +81,16 @@ const LoginForm = ({ handleClickSignup }) => {
           />
         </FloatingLabel>
 
-        <Form.Check type="checkbox" label="Remember me" />
+        <Form.Check className="mb-4" type="checkbox" label="Remember me" />
 
-        <p className="text-center mt-4 mb-4" onClick={handleClickSignup}>
-          New User? Click here to Signup!
-        </p>
+        <div className="d-grid mx-auto">
+          <Button onClick={handleLogin}>Sign in</Button>
+        </div>
       </Form.Group>
-      <div className="d-grid mx-auto">
-        <Button onClick={handleSignin}>Sign in</Button>
+      <div className="d-grid mx-auto mt-5">
+        <Button onClick={handleClickSignup}>
+          New User? Click here to Signup!
+        </Button>
       </div>
     </>
   );

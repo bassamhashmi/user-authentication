@@ -1,34 +1,47 @@
 import React from "react";
 import { Form, FloatingLabel, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
-const SignupForm = ({ handleSignupConfirmed }) => {
+const SignUpForm = () => {
   const [userInput, setUserInput] = React.useState({
     fullName: "",
     email: "",
     password: "",
   });
 
-  const handleSignup = async () => {
-    const response = await fetch("http://localhost:3001/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fullName: userInput.fullName,
-        email: userInput.email,
-        password: userInput.password,
-      }),
-    });
-
-    const json = await response.json();
-    handleSignupConfirmed();
-
-    console.log(json);
-  };
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     setUserInput({ ...userInput, [event.target.name]: event.target.value });
+  };
+
+  const handleClick = async () => {
+    const newUser = {
+      fullName: userInput.fullName,
+      email: userInput.email,
+      password: userInput.password,
+    };
+
+    const url = "http://localhost:3001/api/auth/";
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/obj",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        alert("Enter details correctly");
+        return;
+      }
+
+      navigate("/");
+    } catch (error) {
+      console.log("Error occured while signup request!", error);
+    }
   };
 
   return (
@@ -61,10 +74,10 @@ const SignupForm = ({ handleSignupConfirmed }) => {
         />
       </FloatingLabel>
       <div className="d-grid mx-auto">
-        <Button onClick={handleSignup}>Sign Up</Button>
+        <Button onClick={handleClick}>Sign Up</Button>
       </div>
     </>
   );
 };
 
-export default SignupForm;
+export default SignUpForm;

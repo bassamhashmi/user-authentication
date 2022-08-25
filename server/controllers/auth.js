@@ -10,6 +10,8 @@ const signUp = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
 
+    console.log(req.body);
+
     if (!fullName || !email || !password) {
       res.status(400).json({ message: "Enter details correctly" });
       return;
@@ -25,7 +27,7 @@ const signUp = async (req, res) => {
 
     res.status(200).json({ success: true, newUser });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: "Email already exist" });
   }
 };
 
@@ -61,8 +63,10 @@ const signIn = async (req, res) => {
 
     // Generating JWT ==> auth_token
     const auth_token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: 21600,
+      expiresIn: 1800, // 30 minutes
     });
+
+    // res.cookie("auth_token", auth_token, { httpOnly: true });
 
     res.status(200).json({ success: true, validate, auth_token, user });
   } catch (error) {

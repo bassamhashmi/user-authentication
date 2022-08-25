@@ -2,7 +2,8 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import AuthRoute from "./AuthRoute";
 import Dashboard from "../pages/Dashboard";
-import UserAuth from "../pages/UserAuth";
+import Login from "../pages/Login";
+import SignUp from "../pages/SignUp";
 
 export default function AppRoutes() {
   return (
@@ -15,7 +16,8 @@ export default function AppRoutes() {
           </AuthRoute>
         }
       />
-      <Route path="/user-auth" element={<UserAuth />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   );
 }

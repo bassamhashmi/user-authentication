@@ -4,10 +4,10 @@ import { useAuthContext } from "../context/authContext";
 
 export default function AuthRoute({ children }) {
   const location = useLocation();
-  const [isAuthenticated, _handleAuthChange] = useAuthContext();
+  const [isAuthenticated] = useAuthContext();
 
   if (!isAuthenticated) {
-    return <Navigate to="/user-auth" replace state={{ from: location }} />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   return children;

@@ -10,11 +10,22 @@ const verifyJWT = (req, res, next) => {
 
     next();
   } catch (error) {
-    res.status(401).json({
+    res.status(403).json({
       message: "auth_token ==> Verification Failed!",
       error: error,
     });
   }
 };
 
-module.exports = { verifyJWT };
+const militaryTypeSecurity = (req, res, next) => {
+  console.log(req.headers.x_api_key);
+
+  if (req.headers.x_api_key === process.env.x_api_key) {
+    next();
+    return;
+  }
+
+  res.status(400).json("notAuthorized");
+};
+
+module.exports = { verifyJWT, militaryTypeSecurity };
